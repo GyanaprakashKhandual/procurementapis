@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Report Of Procurement APIS</title>
+    <style>
+        :root {
+            /* Gradient Color Schemes */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --light-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+            /* Accent Gradients */
+            --ocean-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sunset-gradient: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            --nature-gradient: linear-gradient(135deg, #48c9b0 0%, #16a085 100%);
+            --purple-gradient: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            --rose-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+
+            /* Solid Colors for text */
+            --primary-color: #667eea;
+            --success-color: #00f2fe;
+            --danger-color: #fa709a;
+            --warning-color: #fcb69f;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--sunset-gradient);
+            border-radius: 2px;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        label {
+            font-weight: 600;
+            color: white;
+            font-size: 0.95rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        select,
+        input {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .table-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--ocean-gradient);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 18px 20px;
+            position: sticky;
+            top: 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        th:first-child {
+            border-top-left-radius: 0;
+        }
+
+        th:last-child {
+            border-top-right-radius: 0;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        tbody tr {
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--light-gradient);
+        }
+
+        tbody tr:hover {
+            background: var(--rose-gradient);
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .status-pass {
+            background: var(--nature-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-fail {
+            background: var(--danger-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .pass-rate-high {
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .pass-rate-medium {
+            background: var(--warning-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .pass-rate-low {
+            background: var(--danger-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        /* ===== HIDE SCROLLBARS ===== */
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* Alternative: Make scrollbar transparent */
+        .transparent-scrollbar::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+            /* Chrome/Safari */
+        }
+
+        /* For specific elements - apply to any scrollable container */
+        .table-wrapper::-webkit-scrollbar,
+        .container::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .table-wrapper,
+        .container,
+        body {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* ===== REMOVE DROPDOWN ARROWS ===== */
+
+        /* Remove default dropdown arrow */
+        select {
+            /* Remove default styling */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            /* Remove IE arrow */
+            background-image: none;
+
+            /* For older IE versions */
+            &::-ms-expand {
+                display: none;
+            }
+        }
+
+        /* Alternative method - more specific */
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: none;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .custom-select::-ms-expand {
+            display: none;
+        }
+
+        /* ===== OPTIONAL: ADD CUSTOM DROPDOWN ARROW ===== */
+
+        /* If you want a custom arrow instead */
+        .select-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .select-wrapper select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 40px;
+            /* Make space for custom arrow */
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* Alternative custom arrow with CSS border */
+        .select-wrapper-arrow::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #666;
+            pointer-events: none;
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+
+        /* Apply to any element to hide its scrollbar */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
+        /* Apply to select elements to remove arrow */
+        .no-arrow {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: none;
+        }
+
+        .no-arrow::-ms-expand {
+            display: none;
+        }
+
+        /* ===== COMPREHENSIVE RESET FOR ALL BROWSERS ===== */
+
+        /* Universal scrollbar hiding */
+        * {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE 10+ */
+        }
+
+        *::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+            /* Chrome/Safari/Webkit */
+        }
+
+        /* Universal dropdown arrow removal */
+        select,
+        .select,
+        [role="combobox"] {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-image: none !important;
+        }
+
+        select::-ms-expand,
+        .select::-ms-expand {
+            display: none !important;
+        }
+
+
+        .badge-speed-high {
+            background: var(--nature-gradient);
+            color: white;
+        }
+
+        .badge-speed-low {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 8px;
+        }
+
+        .pagination button {
+            padding: 12px 18px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination button.active {
+            background: var(--sunset-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .pagination button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%) !important;
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(255, 234, 167, 0.4) !important;
+        }
+
+        /* Floating Action Buttons */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--purple-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Scrollbar Styling */
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--ocean-gradient);
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--purple-gradient);
+        }
+
+        /* Loading Animation */
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+
+        .loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            th,
+            td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .table-container {
+                border-radius: 15px;
+            }
+
+            .fab {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            th,
+            td {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .badge {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>API Performance Dashboard</h1>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label for="api-filter">API Name:</label>
+                <select id="api-filter">
+                    <option value="">All APIs</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="speed-filter">Data Speed:</label>
+                <select id="speed-filter">
+                    <option value="">All Speeds</option>
+                    <option value="35mbps">35mbps</option>
+                    <option value="1mbps">1mbps</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="status-filter">Status:</label>
+                <select id="status-filter">
+                    <option value="">All</option>
+                    <option value="pass">Passed</option>
+                    <option value="fail">Failed</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="search">Search:</label>
+                <input type="text" id="search" placeholder="Search...">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="api-table">
+                <thead>
+                    <tr>
+                        <th>SL No</th>
+                        <th>API Name</th>
+                        <th>Data Speed</th>
+                        <th>Avg Res Time</th>
+                        <th>Min Res Time</th>
+                        <th>Med Res Time</th>
+                        <th>Max Res Time</th>
+                        <th>90th %</th>
+                        <th>95th %</th>
+                        <th>Status Pass Rate</th>
+                        <th>Status Pass Count</th>
+                        <th>Response Pass Rate</th>
+                        <th>Response Pass Count</th>
+                    </tr>
+                </thead>
+                <tbody id="api-table-body">
+                    <!-- Data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <!-- Pagination will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // API Data
+        const apiData = [
+            {
+                name: "category",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "482.94ms",
+                                min: "0s",
+                                med: "481.5ms",
+                                max: "673.79ms",
+                                p90: "494.26ms",
+                                p95: "500.25ms"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 5338,
+                                failCount: 21,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "94%",
+                                passCount: 5086,
+                                failCount: 273,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "613.69ms",
+                                min: "487.5ms",
+                                med: "564.95ms",
+                                max: "2.87s",
+                                p90: "756.69ms",
+                                p95: "855.29ms"
+                            },
+                            status: {
+                                passRate: "100%",
+                                passCount: 25,
+                                failCount: 543,
+                                result: "pass"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 25,
+                                failCount: 543,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "site",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "502.11ms",
+                                min: "0s",
+                                med: "483.66ms",
+                                max: "3.15s",
+                                p90: "563.39ms",
+                                p95: "597.62ms"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 5506,
+                                failCount: 8,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "83%",
+                                passCount: 4630,
+                                failCount: 884,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "13.27s",
+                                min: "0s",
+                                med: "7.21s",
+                                max: "1m0s",
+                                p90: "43.12s",
+                                p95: "55.19s"
+                            },
+                            status: {
+                                passRate: "41%",
+                                passCount: 86,
+                                failCount: 120,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "44%",
+                                passCount: 92,
+                                failCount: 114,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "brand",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "701.9ms",
+                                min: "0s",
+                                med: "687.06ms",
+                                max: "1.79s",
+                                p90: "754.03ms",
+                                p95: "789.27ms"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 4898,
+                                failCount: 6,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 6,
+                                failCount: 4898,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "1.68s",
+                                min: "698.33ms",
+                                med: "1.47s",
+                                max: "6.57s",
+                                p90: "2.1s",
+                                p95: "3.95s"
+                            },
+                            status: {
+                                passRate: "100%",
+                                passCount: 0,
+                                failCount: 3329,
+                                result: "pass"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 0,
+                                failCount: 3329,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "uom",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "483.42ms",
+                                min: "0s",
+                                med: "481.13ms",
+                                max: "1.26s",
+                                p90: "493.06ms",
+                                p95: "498.8ms"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 5341,
+                                failCount: 21,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "95%",
+                                passCount: 5108,
+                                failCount: 254,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "9.1s",
+                                min: "0s",
+                                med: "4.52s",
+                                max: "1m0s",
+                                p90: "24.9s",
+                                p95: "45.69s"
+                            },
+                            status: {
+                                passRate: "85%",
+                                passCount: 455,
+                                failCount: 76,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "9%",
+                                passCount: 49,
+                                failCount: 482,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "purchase request page",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "13.95s",
+                                min: "0s",
+                                med: "14.34s",
+                                max: "23.86s",
+                                p90: "18.81s",
+                                p95: "19.66s"
+                            },
+                            status: {
+                                passRate: "98%",
+                                passCount: 610,
+                                failCount: 11,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "1%",
+                                passCount: 11,
+                                failCount: 610,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "38.73s",
+                                min: "0s",
+                                med: "47.23s",
+                                max: "1m0s",
+                                p90: "57.46s",
+                                p95: "58.38s"
+                            },
+                            status: {
+                                passRate: "38%",
+                                passCount: 73,
+                                failCount: 115,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "9%",
+                                passCount: 18,
+                                failCount: 170,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "Purchase_request_status",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "29.04s",
+                                min: "0s",
+                                med: "19.46s",
+                                max: "1m0s",
+                                p90: "1m0s",
+                                p95: "1m0s"
+                            },
+                            status: {
+                                passRate: "65%",
+                                passCount: 186,
+                                failCount: 100,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "3%",
+                                passCount: 9,
+                                failCount: 277,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "29.84s",
+                                min: "2s",
+                                med: "29.55s",
+                                max: "1m0s",
+                                p90: "47.86s",
+                                p95: "51.84s"
+                            },
+                            status: {
+                                passRate: "97%",
+                                passCount: 327,
+                                failCount: 8,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 0,
+                                failCount: 335,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "user_order",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "4.16s",
+                                min: "0s",
+                                med: "4.01s",
+                                max: "19.28s",
+                                p90: "5.31s",
+                                p95: "5.87s"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 1672,
+                                failCount: 4,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 4,
+                                failCount: 1672,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "17.13s",
+                                min: "0s",
+                                med: "0s",
+                                max: "57.77s",
+                                p90: "54.99s",
+                                p95: "55.26s"
+                            },
+                            status: {
+                                passRate: "0%",
+                                passCount: 0,
+                                failCount: 150,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "62%",
+                                passCount: 94,
+                                failCount: 56,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "rate_app_status",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "3.11s",
+                                min: "0s",
+                                med: "3.23s",
+                                max: "8.67s",
+                                p90: "5.19s",
+                                p95: "5.76s"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 1994,
+                                failCount: 7,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 7,
+                                failCount: 1994,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "5.19s",
+                                min: "1.14s",
+                                med: "2.88s",
+                                max: "1m0s",
+                                p90: "9.95s",
+                                p95: "17.09s"
+                            },
+                            status: {
+                                passRate: "98%",
+                                passCount: 1409,
+                                failCount: 17,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 0,
+                                failCount: 1426,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "rate_app_pages",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "3.21s",
+                                min: "0s",
+                                med: "3.15s",
+                                max: "7.82s",
+                                p90: "4.56s",
+                                p95: "4.97s"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 1958,
+                                failCount: 13,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 13,
+                                failCount: 1958,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "17.71s",
+                                min: "0s",
+                                med: "12.69s",
+                                max: "55.59s",
+                                p90: "40.12s",
+                                p95: "51.57s"
+                            },
+                            status: {
+                                passRate: "50%",
+                                passCount: 107,
+                                failCount: 107,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "19%",
+                                passCount: 42,
+                                failCount: 172,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "Locate Rateapproval",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "27.94s",
+                                min: "1.59s",
+                                med: "23.01s",
+                                max: "1m0s",
+                                p90: "1m0s",
+                                p95: "1m0s"
+                            },
+                            status: {
+                                passRate: "79%",
+                                passCount: 228,
+                                failCount: 59,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 0,
+                                failCount: 287,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "28.65s",
+                                min: "4.2s",
+                                med: "28.13s",
+                                max: "1m0s",
+                                p90: "44.85s",
+                                p95: "50.35s"
+                            },
+                            status: {
+                                passRate: "98%",
+                                passCount: 351,
+                                failCount: 5,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 0,
+                                failCount: 356,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                name: "Purchase order page",
+                tests: [
+                    {
+                        network: "Under 35mbps",
+                        metrics: {
+                            duration: {
+                                avg: "1.27s",
+                                min: "0s",
+                                med: "1.26s",
+                                max: "2.09s",
+                                p90: "1.32s",
+                                p95: "1.39s"
+                            },
+                            status: {
+                                passRate: "99%",
+                                passCount: 3578,
+                                failCount: 14,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "0%",
+                                passCount: 14,
+                                failCount: 3578,
+                                result: "fail"
+                            }
+                        }
+                    },
+                    {
+                        network: "Under 1mbps",
+                        metrics: {
+                            duration: {
+                                avg: "41.81s",
+                                min: "0s",
+                                med: "49.3s",
+                                max: "59.35s",
+                                p90: "58.78s",
+                                p95: "58.96s"
+                            },
+                            status: {
+                                passRate: "23%",
+                                passCount: 40,
+                                failCount: 129,
+                                result: "fail"
+                            },
+                            responseTime: {
+                                passRate: "13%",
+                                passCount: 23,
+                                failCount: 146,
+                                result: "fail"
+                            }
+                        }
+                    }
+                ]
+            }
+        ];
+
+        // DOM Elements
+        const tableBody = document.getElementById('api-table-body');
+        const apiFilter = document.getElementById('api-filter');
+        const speedFilter = document.getElementById('speed-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const searchInput = document.getElementById('search');
+        const pagination = document.getElementById('pagination');
+
+        // Constants
+        const ROWS_PER_PAGE = 10;
+        let currentPage = 1;
+        let filteredData = [];
+
+        // Initialize the page
+        function init() {
+            populateApiFilter();
+            renderTable();
+            setupEventListeners();
+        }
+
+        // Populate API filter dropdown
+        function populateApiFilter() {
+            const uniqueApis = [...new Set(apiData.map(api => api.name))];
+            uniqueApis.forEach(api => {
+                const option = document.createElement('option');
+                option.value = api;
+                option.textContent = api;
+                apiFilter.appendChild(option);
+            });
+        }
+
+        // Filter data based on filters and search
+        function filterData() {
+            const apiValue = apiFilter.value.toLowerCase();
+            const speedValue = speedFilter.value.toLowerCase();
+            const statusValue = statusFilter.value.toLowerCase();
+            const searchValue = searchInput.value.toLowerCase();
+
+            filteredData = [];
+
+            apiData.forEach(api => {
+                api.tests.forEach(test => {
+                    // Check filters
+                    if (apiValue && !api.name.toLowerCase().includes(apiValue)) return;
+                    if (speedValue && !test.network.toLowerCase().includes(speedValue)) return;
+
+                    // Check status filter
+                    if (statusValue) {
+                        if (statusValue === 'pass' && test.metrics.status.result !== 'pass') return;
+                        if (statusValue === 'fail' && test.metrics.status.result !== 'fail') return;
+                    }
+
+                    // Check search
+                    if (searchValue) {
+                        const searchStr = `${api.name} ${test.network} ${JSON.stringify(test.metrics)}`.toLowerCase();
+                        if (!searchStr.includes(searchValue)) return;
+                    }
+
+                    filteredData.push({
+                        apiName: api.name,
+                        ...test
+                    });
+                });
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        // Render the table with filtered data
+        function renderTable() {
+            tableBody.innerHTML = '';
+
+            const startIdx = (currentPage - 1) * ROWS_PER_PAGE;
+            const endIdx = startIdx + ROWS_PER_PAGE;
+            const paginatedData = filteredData.slice(startIdx, endIdx);
+
+            if (filteredData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="13" style="text-align: center;">No data found matching your criteria</td>`;
+                tableBody.appendChild(row);
+            } else {
+                paginatedData.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    const slNo = startIdx + index + 1;
+                    const metrics = item.metrics;
+
+                    // Determine pass rate classes
+                    const statusPassClass = getPassRateClass(parseFloat(metrics.status.passRate));
+                    const responsePassClass = getPassRateClass(parseFloat(metrics.responseTime.passRate));
+
+                    // Determine speed badge
+                    const speedBadgeClass = item.network.includes('35mbps') ? 'badge-speed-high' : 'badge-speed-low';
+                    const speedText = item.network.includes('35mbps') ? '35mbps' : '1mbps';
+
+                    row.innerHTML = `
+                        <td>${slNo}</td>
+                        <td>${item.apiName}</td>
+                        <td><span class="badge ${speedBadgeClass}">${speedText}</span></td>
+                        <td>${metrics.duration.avg}</td>
+                        <td>${metrics.duration.min}</td>
+                        <td>${metrics.duration.med}</td>
+                        <td>${metrics.duration.max}</td>
+                        <td>${metrics.duration.p90}</td>
+                        <td>${metrics.duration.p95}</td>
+                        <td class="${statusPassClass}">${metrics.status.passRate}</td>
+                        <td>${metrics.status.passCount}</td>
+                        <td class="${responsePassClass}">${metrics.responseTime.passRate}</td>
+                        <td>${metrics.responseTime.passCount}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            }
+
+            renderPagination();
+        }
+
+        // Get CSS class based on pass rate percentage
+        function getPassRateClass(rate) {
+            if (rate >= 90) return 'pass-rate-high';
+            if (rate >= 50) return 'pass-rate-medium';
+            return 'pass-rate-low';
+        }
+
+        // Render pagination controls
+        function renderPagination() {
+            pagination.innerHTML = '';
+            const totalPages = Math.ceil(filteredData.length / ROWS_PER_PAGE);
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '&laquo;';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+            pagination.appendChild(prevButton);
+
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                if (i === currentPage) {
+                    pageButton.classList.add('active');
+                }
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                });
+                pagination.appendChild(pageButton);
+            }
+
+            // Next button
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '&raquo;';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+            pagination.appendChild(nextButton);
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            apiFilter.addEventListener('change', filterData);
+            speedFilter.addEventListener('change', filterData);
+            statusFilter.addEventListener('change', filterData);
+            searchInput.addEventListener('input', filterData);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize with all data
+            filteredData = apiData.flatMap(api =>
+                api.tests.map(test => ({ apiName: api.name, ...test }))
+            ).sort((a, b) => a.apiName.localeCompare(b.apiName));
+
+            init();
+        });
+    </script>
+</body>
+
+</html>
