@@ -125,41 +125,47 @@
         }
 
         .table-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: visible; /* Changed from 'hidden' */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
 
-        .table-wrapper {
-            overflow-x: auto;
-            max-height: 600px;
-            overflow-y: auto;
-        }
+.table-wrapper {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto; /* This enables scrolling */
+    border-radius: 20px; /* Match parent container */
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+table {
+    width: 100%;
+    border-collapse: separate; /* Required for sticky headers */
+    border-spacing: 0; /* Removes gaps between cells */
+}
 
-        th {
-            background: var(--ocean-gradient);
-            color: white;
-            font-weight: 600;
-            text-align: left;
-            padding: 18px 20px;
-            position: sticky;
-            top: 0;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-        }
+th {
+    background: var(--ocean-gradient);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 18px 20px;
+    position: sticky;
+    top: 0; /* Sticks to the top of .table-wrapper */
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
 
+/* Optional: Add smooth scrolling for better UX */
+.table-wrapper {
+    scroll-behavior: smooth;
+}
         th:first-child {
             border-top-left-radius: 0;
         }
