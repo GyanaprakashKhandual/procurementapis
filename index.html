@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Report Of Procurement APIS</title>
+    <title>Performance and Load Test Report Of PISL</title>
     <style>
         :root {
             /* Gradient Color Schemes */
@@ -578,7 +578,7 @@
 
 <body>
     <div class="container">
-        <h1>API Performance Dashboard</h1>
+        <h1>Load && Performance Test Dashboard of PISL</h1>
 
         <div class="controls">
             <div class="filter-group">
@@ -1249,7 +1249,289 @@
                         }
                     }
                 ]
+            },
+            {
+        name: "dmr_purchase_order",
+        tests: [
+            {
+                network: "Under 35mbps",
+                metrics: {
+                    duration: {
+                        avg: "1.8s",
+                        min: "0s",
+                        med: "1.68s",
+                        max: "6.94s",
+                        p90: "2.37s",
+                        p95: "2.63s"
+                    },
+                    status: {
+                        passRate: "95%",
+                        passCount: 340,
+                        failCount: 17,
+                        result: "fail"
+                    },
+                    responseTime: {
+                        passRate: "4%",
+                        passCount: 17,
+                        failCount: 340,
+                        result: "fail"
+                    }
+                }
+            },
+            {
+                network: "Under 1mbps",
+                metrics: {
+                    duration: {
+                        avg: "32.69s",
+                        min: "19.02s",
+                        med: "34.19s",
+                        max: "37.67s",
+                        p90: "35.47s",
+                        p95: "36.57s"
+                    },
+                    status: {
+                        passRate: "100%",
+                        passCount: 11,
+                        failCount: 0,
+                        result: "pass"
+                    },
+                    responseTime: {
+                        passRate: "0%",
+                        passCount: 0,
+                        failCount: 11,
+                        result: "fail"
+                    }
+                }
             }
+        ]
+    },
+    {
+        name: "imprest_dmr_list",
+        tests: [
+            {
+                network: "Under 35mbps",
+                metrics: {
+                    duration: {
+                        avg: "505.65ms",
+                        min: "0s",
+                        med: "492.6ms",
+                        max: "1.21s",
+                        p90: "558.38ms",
+                        p95: "576.25ms"
+                    },
+                    status: {
+                        passRate: "98%",
+                        passCount: 699,
+                        failCount: 9,
+                        result: "fail"
+                    },
+                    responseTime: {
+                        passRate: "58%",
+                        passCount: 412,
+                        failCount: 296,
+                        result: "fail"
+                    }
+                }
+            },
+            {
+                network: "Under 1mbps",
+                metrics: {
+                    duration: {
+                        avg: "785.17ms",
+                        min: "496.26ms",
+                        med: "560.6ms",
+                        max: "2.07s",
+                        p90: "1.25s",
+                        p95: "1.31s"
+                    },
+                    status: {
+                        passRate: "100%",
+                        passCount: 713,
+                        failCount: 0,
+                        result: "pass"
+                    },
+                    responseTime: {
+                        passRate: "0%",
+                        passCount: 1,
+                        failCount: 713,
+                        result: "fail"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        name: "order_status_count",
+        tests: [
+            {
+                network: "Under 35mbps",
+                metrics: {
+                    duration: {
+                        avg: "707.26ms",
+                        min: "0s",
+                        med: "694.29ms",
+                        max: "1.41s",
+                        p90: "742.4ms",
+                        p95: "802.61ms"
+                    },
+                    status: {
+                        passRate: "99%",
+                        passCount: 642,
+                        failCount: 5,
+                        result: "fail"
+                    },
+                    responseTime: {
+                        passRate: "0%",
+                        passCount: 5,
+                        failCount: 642,
+                        result: "fail"
+                    }
+                }
+            },
+            {
+                network: "Under 1mbps",
+                metrics: {
+                    duration: {
+                        avg: "1.03s",
+                        min: "694.7ms",
+                        med: "834.17ms",
+                        max: "1.79s",
+                        p90: "1.48s",
+                        p95: "1.62s"
+                    },
+                    status: {
+                        passRate: "100%",
+                        passCount: 662,
+                        failCount: 0,
+                        result: "pass"
+                    },
+                    responseTime: {
+                        passRate: "0%",
+                        passCount: 0,
+                        failCount: 662,
+                        result: "fail"
+                    }
+                }
+            }
+        ]
+    },
+    // ... (continuing with all other APIs in the same format)
+    {
+        name: "vendor",
+        tests: [
+            {
+                network: "Under 35mbps",
+                metrics: {
+                    duration: {
+                        avg: "2.62s",
+                        min: "0s",
+                        med: "2.8s",
+                        max: "4.3s",
+                        p90: "3.6s",
+                        p95: "3.76s"
+                    },
+                    status: {
+                        passRate: "91%",
+                        passCount: 267,
+                        failCount: 25,
+                        result: "fail"
+                    },
+                    responseTime: {
+                        passRate: "8%",
+                        passCount: 25,
+                        failCount: 267,
+                        result: "fail"
+                    }
+                }
+            },
+            {
+                network: "Under 1mbps",
+                metrics: {
+                    duration: {
+                        avg: "38.95s",
+                        min: "38.95s",
+                        med: "38.95s",
+                        max: "38.95s",
+                        p90: "38.95s",
+                        p95: "38.95s"
+                    },
+                    status: {
+                        passRate: "100%",
+                        passCount: 1,
+                        failCount: 0,
+                        result: "pass"
+                    },
+                    responseTime: {
+                        passRate: "0%",
+                        passCount: 0,
+                        failCount: 1,
+                        result: "fail"
+                    }
+                }
+            }
+        ]
+    },
+    // ... (remaining APIs)
+    {
+        name: "missConfig",
+        tests: [
+            {
+                network: "Under 35mbps",
+                metrics: {
+                    duration: {
+                        avg: "492.41ms",
+                        min: "0s",
+                        med: "488.6ms",
+                        max: "678.75ms",
+                        p90: "548.98ms",
+                        p95: "562.92ms"
+                    },
+                    status: {
+                        passRate: "98%",
+                        passCount: 606,
+                        failCount: 10,
+                        result: "fail"
+                    },
+                    responseTime: {
+                        passRate: "70%",
+                        passCount: 434,
+                        failCount: 182,
+                        result: "fail"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        name: "organsation",
+        tests: [
+            {
+                network: "Under 35mbps",
+                metrics: {
+                    duration: {
+                        avg: "516.64ms",
+                        min: "0s",
+                        med: "486.55ms",
+                        max: "914.57ms",
+                        p90: "809.66ms",
+                        p95: "825.09ms"
+                    },
+                    status: {
+                        passRate: "94%",
+                        passCount: 501,
+                        failCount: 28,
+                        result: "fail"
+                    },
+                    responseTime: {
+                        passRate: "73%",
+                        passCount: 388,
+                        failCount: 141,
+                        result: "fail"
+                    }
+                }
+            }
+        ]
+    }
         ];
 
         // DOM Elements
